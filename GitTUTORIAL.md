@@ -1,5 +1,10 @@
 # GIT
 
+## What is Git :
+it’s a version control system ; a version control system it’s a system that help us track our code with every change we make in it; which make debugging and team work easier ; 
+
+And GITHUB is an online platform where u can use GIT.
+
 ## Verify that git had succefuly instaled : 
 git --version 
 or 
@@ -27,7 +32,11 @@ git init
 // create ur file in ur favorite ide and fav lang
 
 ls // list ur project in ur directory
-project.c // . + ur fav lang
+
+// it will show :
+project.c 
+
+ls -la // show everything including hiding files // abbr : la
 
 // to see that it has been list, use the following code : 
 git status
@@ -55,7 +64,7 @@ git status // verefying our sraged file
 On branch master
 
 No commits yet
-git add --all
+git add --all // or git add .
 Changes to be committed:
   (use "git rm --cached ..." to unstage)
     new file: project.c
@@ -69,7 +78,7 @@ git add -A
 // = save file = tracked file // git commit
 // when we commit we should always leave a message // -m
 
-git commit -m "First release of Hello World!" 
+git commit -m "Added project.c" -m "Some description" 
 
 // The Staging Environment has been committed to our repo, with the message:
 "First release of Hello World!"
@@ -89,3 +98,27 @@ git commit -a -m "Updated projet.c with a new line" //  commit without staging f
 git log //To view the history of commits for a repository
 
 ## Git Branch
+// is to used when we want to modify the  code without impecting the main code
+
+
+git branch project-branch // we creted a branch of our project
+
+// confirm we have created the  branch :
+git branch //to see all the branches you have
+
+// it will show : 
+ project-branch
+* master // specifies that we are currently on that branch
+
+git checkout project-branch //to switch from a branch to branch
+
+// it will show : Switched to branch 'project-branch'
+
+git checkout -b project-branch1 //to create new branch and switch to it
+
+## clone 
+// bring repository hosted in a online platform like git hub to ur local machine.
+
+push —> ulpoad git files in a remote repositry like github.
+pull —> download changes from online repo to ur local machine the opposite of push
+
