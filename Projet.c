@@ -1,198 +1,166 @@
+#include <raylib.h>
+#include <stddef.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
 
-typedef struct Node{
-	int info;
-	struct Node* next;
-}Node;
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
 
-typedef Node* File;
+typedef struct Queue {
+    Node* front;
+    Node* rear;
+} Queue;
 
-void InitFile(File* p){
-	(*p)=NULL;
+// enfile 
+void enqueue(Queue* q, int value) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = value;
+    newNode->next = NULL;
+
+    if (q->rear == NULL) {
+       // ida la file vide
+        q->front = q->rear = newNode;
+    } else {
+        // ajoute un element ala fin de la file
+        q->rear->next = newNode;
+        q->rear = newNode;
+    }
 }
 
-bool FileVide(File p){
-	if(p==NULL) return true;
-	return false;
+// defiler
+int dequeue(Queue* q) {
+    if (q->front == NULL) {
+        // ida la file vide
+        return -1;
+    }
+
+    // supp l'element 
+    Node* temp = q->front;
+    int value = temp->data;
+
+    q->front = temp->next;
+
+    if (q->front == NULL) {
+        // la fille elle est vide
+        q->rear = NULL;
+    }
+
+    free(temp);
+
+    return value;
+}
+// dessin tae l'element
+void drawQueue(Queue* q) {
+    Node* current = q->front;
+    int xPos = 100;
+    const int yPos = 200;
+    const int horizontalSpacing = 80;
+    const int circleRadius = 20;  // Radius of the circles
+
+    while (current != NULL) {
+        DrawCircle(xPos + circleRadius, yPos + circleRadius, circleRadius, BLUE);
+        DrawText(TextFormat("%d", current->data), xPos, yPos, 20, WHITE);
+
+        if (current->next != NULL) {
+            DrawLine(xPos + circleRadius * 2, yPos + circleRadius, xPos + circleRadius * 2 + horizontalSpacing, yPos + circleRadius, BLACK);
+        }
+
+        xPos += horizontalSpacing;
+        current = current->next;
+    }
 }
 
-int SommetFile(File p){
-	return p->info;
-}
+int main(void) {
+    const int screenWidth = 800;
+    const int screenHeight = 450;
 
-void Enfiler(File* p, int x){
-	File t,q;
-	t=(File)malloc(sizeof(Node));
-	t->info=x;
-	t->next=NULL;
-	if(*p!=NULL){
-		q=(*p);
-		while(q->next!=NULL){
-			q=q->next;
-		}
-		q->next=t;
-	}else{
-		*p=t;
-	}
-}
+     char errorMessage[256] = "";  // Variable to store the error message
 
-void Desenfiler(File* p, int* x){
-	File t;
-	(*x)=(*p)->info;
-	t=(*p);
-	(*p)=(*p)->next;
-	free(t);	
-}
+    InitWindow(screenWidth, screenHeight, "Les files");
 
-void RemplirFile(File* p, int n){
-	int i,x;
-	for(i=0;i<n;i++){
-		printf("give element %d\n",i+1);
-		scanf("%d",&x);
-		Enfiler(p,x);
-	}
-}
+    SetTargetFPS(60);
 
-void AfficherFile(File p){
-	File t;
-	InitFile(&t);
-	int x;
-	while(!FileVide(p)){
-		Desenfiler(&p,&x);
-		printf("->%d",x);
-		Enfiler(&t,x);
-	}
-	printf("\n");
-	while(!FileVide(t)){
-		Desenfiler(&t,&x);
-		Enfiler(&p,x);
-	}	
-}
+    Queue q = { .front = NULL, .rear = NULL };
+    int nodeCount = 0;// to not make more than 11 file
 
-bool RechercherVal(File p, int v){
-	bool found=false;
-	int x;
-	File t;
-	InitFile(&t);
-	while(!FileVide(p)){
-		Desenfiler(&p,&x);
-		Enfiler(&t,x);
-		if(x==v){
-			found=true;
-		}
-	}
-	while(!FileVide(t)){
-		Desenfiler(&t,&x);
-		Enfiler(&p,x);
-	}
-	return found;
-}
+    while (!WindowShouldClose()) {
+      
 
-void Remplacer(File* p, int val1, int val2){
-	File t;
-	InitFile(&t);
-	int x;
-	while(!FileVide(*p)){
-		Desenfiler(p,&x);
-		if(x==val1){
-			Enfiler(&t,val2);
-		}else{
-			Enfiler(&t,x);
-		}
-	}
-	while(!FileVide(t)){
-		Desenfiler(&t,&x);
-		Enfiler(p,x);
-	}
-} 
+        //  si le bouton  est clique
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            // les coordonnees du clic
+            int mouseX = GetMouseX();
+            int mouseY = GetMouseY();
 
-void Inserer(File* p, int k, int val){
-	File t;
-	InitFile(&t);
-	int x,i=1;
-	
-	while(!FileVide(*p) && i<k){
-		Desenfiler(p,&x);
-		Enfiler(&t,x);
-		i++;
-	}
-	Enfiler(&t,val);
-	while(!FileVide(*p)){
-		Desenfiler(p,&x);
-		Enfiler(&t,x);
-	}
-	while(!FileVide(t)){
-		Desenfiler(&t,&x);
-		Enfiler(p,x);
-	}
-}
+            // si on a clicque  enfiler
+           if (CheckCollisionPointRec((Vector2){mouseX, mouseY}, (Rectangle){600, 50, 100, 40})) {
+            if (nodeCount <= 7)
+            {
+                strcpy(errorMessage, "");
+            
+                enqueue(&q, GetRandomValue(10, 99));
+                nodeCount++;
+            }else{
+             strcpy(errorMessage, "La file est pleine !");
+            }
+            
+                
+             
+            }
 
-File Fusion(File a, File b){
-	File t,t1,t2;
-	InitFile(&t);
-	InitFile(&t1);
-	InitFile(&t2);
-	int x;
-	while(!FileVide(a) && !FileVide(b)){
-		if(SommetFile(a)<SommetFile(b)){
-			Desenfiler(&a,&x);
-			Enfiler(&t,x);
-			Enfiler(&t1,x);
-		}else{
-			Desenfiler(&b,&x);
-			Enfiler(&t,x);
-			Enfiler(&t2,x);
-		}
-	}
-	while(!FileVide(a)){
-		Desenfiler(&a,&x);
-		Enfiler(&t,x);
-		Enfiler(&t1,x);
-	}
-	while(!FileVide(b)){
-		Desenfiler(&b,&x);
-		Enfiler(&t,x);
-		Enfiler(&t2,x);
-	}
-	while(!FileVide(t1)){
-		Desenfiler(&t1,&x);
-		Enfiler(&a,x);
-	}
-	while(!FileVide(t2)){
-		Desenfiler(&t2,&x);
-		Enfiler(&b,x);
-	}
-	return t;
-}
+            // si on a clicque defiler
+            if (CheckCollisionPointRec((Vector2){mouseX, mouseY}, (Rectangle){600, 100, 100, 40})) {
+                if (q.front != NULL) {
+                    strcpy(errorMessage, "");
+                    dequeue(&q);
+                    nodeCount--;
+                } else {
+                    // Display an error message when trying to dequeue from an empty queue
+                    strcpy(errorMessage, "Error: La file est vide!");
+                }
+                
+            }
 
-void Fractionner(File* p, File* op, File* ou){
-	int x;
-	File t1,t2,t3;
-	InitFile(&t1);
-	InitFile(&t2);
-	InitFile(&t3);
-	while(!FileVide(*p)){
-		Desenfiler(p,&x);
-		if(x%2==0){
-			Enfiler(&t1,x);
-			Enfiler(&t3,x);
-		}else{
-			Enfiler(&t2,x);
-			Enfiler(&t3,x);
-		}
-	}
-	while(!FileVide(t1)){
-		Desenfiler(&t1,&x);
-		Enfiler(op,x);
-	}
-	while(!FileVide(t2)){
-		Desenfiler(&t2,&x);
-		Enfiler(ou,x);
-	}
-	while(!FileVide(t3)){
-		Desenfiler(&t3,&x);
-		Enfiler(p,x);
-	}
+            // i on a clicque Quitter
+            if (CheckCollisionPointRec((Vector2){mouseX, mouseY}, (Rectangle){600, 150, 100, 40})) {
+                CloseWindow();  // hna fermer la fenetre
+            }
+        }
+
+        BeginDrawing();
+
+        ClearBackground(GRAY);
+
+        // dessiner la file
+        drawQueue(&q);
+
+        // dessiner enfiler
+        DrawRectangle(600, 50, 100, 40, PINK);
+        DrawText("Enfiler", 615, 60, 20, WHITE);
+
+        // dessine le bouton defiler
+        DrawRectangle(600, 100, 100, 40, PINK);
+        DrawText("Defiler", 615, 110, 20, WHITE);
+
+        // dessine le bouton Quitter
+        DrawRectangle(600, 150, 100, 40, PINK);
+        DrawText("Quitter", 615, 160, 20, WHITE);
+
+        DrawText(errorMessage, 10, 10, 20, RED);
+
+        EndDrawing();
+    }
+
+    // liberation
+    Node* current = q.front;
+    while (current != NULL) {
+        Node* next = current->next;
+        free(current);
+        current = next;
+    }
+
+    CloseWindow();
+
+    return 0;
 }
