@@ -1,7 +1,9 @@
 #include <raylib.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 
+#include <malloc.h>
 typedef struct Node {
     int data;
     struct Node* next;
@@ -19,7 +21,7 @@ void enqueue(Queue* q, int value) {
     newNode->next = NULL;
 
     if (q->rear == NULL) {
-       // ida la file vide
+        // ida la file vide
         q->front = q->rear = newNode;
     } else {
         // ajoute un element ala fin de la file
@@ -42,7 +44,7 @@ int dequeue(Queue* q) {
     q->front = temp->next;
 
     if (q->front == NULL) {
-        // la fille elle est vide
+        // la file elle est vide
         q->rear = NULL;
     }
 
@@ -50,20 +52,20 @@ int dequeue(Queue* q) {
 
     return value;
 }
+
 // dessin tae l'element
 void drawQueue(Queue* q) {
     Node* current = q->front;
     int xPos = 100;
     const int yPos = 200;
     const int horizontalSpacing = 80;
-    const int circleRadius = 20;  // Radius of the circles
 
     while (current != NULL) {
-        DrawCircle(xPos + circleRadius, yPos + circleRadius, circleRadius, BLUE);
-        DrawText(TextFormat("%d", current->data), xPos, yPos, 20, WHITE);
+        DrawRectangle(xPos, yPos, 40, 40, BLUE);
+        DrawText(TextFormat("%d", current->data), xPos + 10, yPos + 10, 20, WHITE);
 
         if (current->next != NULL) {
-            DrawLine(xPos + circleRadius * 2, yPos + circleRadius, xPos + circleRadius * 2 + horizontalSpacing, yPos + circleRadius, BLACK);
+            DrawLine(xPos + 40, yPos + 20, xPos + 40 + horizontalSpacing, yPos + 20, BLACK);
         }
 
         xPos += horizontalSpacing;
@@ -74,18 +76,20 @@ void drawQueue(Queue* q) {
 int main(void) {
     const int screenWidth = 800;
     const int screenHeight = 450;
-
      char errorMessage[256] = "";  // Variable to store the error message
 
-    InitWindow(screenWidth, screenHeight, "Les files");
+    InitWindow(screenWidth, screenHeight, "LES FILES");
 
     SetTargetFPS(60);
 
     Queue q = { .front = NULL, .rear = NULL };
-    int nodeCount = 0;// to not make more than 11 file
+    int nodeCount = 0;
+    
+    char inputValue[5] = {0};  // To store user input as string
+    int inputIndex = 0;  // To keep track of the current index in inputValue
+    bool inputMode = false;
 
     while (!WindowShouldClose()) {
-      
 
         //  si le bouton  est clique
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -94,24 +98,24 @@ int main(void) {
             int mouseY = GetMouseY();
 
             // si on a clicque  enfiler
-           if (CheckCollisionPointRec((Vector2){mouseX, mouseY}, (Rectangle){600, 50, 100, 40})) {
-            if (nodeCount <= 7)
+            if (CheckCollisionPointRec((Vector2){mouseX, mouseY}, (Rectangle){600, 50, 100, 40})) {
+                 if (nodeCount <= 7)
             {
                 strcpy(errorMessage, "");
-            
-                enqueue(&q, GetRandomValue(10, 99));
-                nodeCount++;
+                // Activate input mode
+                inputMode = true;
+                // Reset input values
+                inputValue[0] = '\0';
+                inputIndex = 0;
+                     nodeCount++;
             }else{
              strcpy(errorMessage, "La file est pleine !");
             }
-            
-                
-             
             }
 
             // si on a clicque defiler
             if (CheckCollisionPointRec((Vector2){mouseX, mouseY}, (Rectangle){600, 100, 100, 40})) {
-                if (q.front != NULL) {
+                 if (q.front != NULL) {
                     strcpy(errorMessage, "");
                     dequeue(&q);
                     nodeCount--;
@@ -119,12 +123,26 @@ int main(void) {
                     // Display an error message when trying to dequeue from an empty queue
                     strcpy(errorMessage, "Error: La file est vide!");
                 }
-                
             }
 
-            // i on a clicque Quitter
+            // si on a clicque Quitter
             if (CheckCollisionPointRec((Vector2){mouseX, mouseY}, (Rectangle){600, 150, 100, 40})) {
                 CloseWindow();  // hna fermer la fenetre
+            }
+        }
+
+        // Gestion de l'entrée utilisateur pour la valeur à insérer
+        if (inputMode) {
+            int key = GetKeyPressed();
+            if (key >= '0' && key <= '9' && inputIndex < 4) {
+                // Append digit to inputValue
+                inputValue[inputIndex++] = key;
+                inputValue[inputIndex] = '\0';  // Null-terminate the string
+            } else if (key == KEY_ENTER) {
+                // Enqueue the value and deactivate input mode
+                int value = atoi(inputValue);
+                enqueue(&q, value);
+                inputMode = false;
             }
         }
 
@@ -147,7 +165,12 @@ int main(void) {
         DrawRectangle(600, 150, 100, 40, PINK);
         DrawText("Quitter", 615, 160, 20, WHITE);
 
-        DrawText(errorMessage, 10, 10, 20, RED);
+        // zone de ecreture
+        if (inputMode) {
+            DrawRectangle(600, 200, 100, 40, BLACK);
+            DrawText(inputValue, 615, 210, 20, WHITE);
+        }
+                DrawText(errorMessage, 10, 10, 20, RED);
 
         EndDrawing();
     }
@@ -164,3 +187,4 @@ int main(void) {
 
     return 0;
 }
+
