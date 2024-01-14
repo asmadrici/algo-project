@@ -51,14 +51,14 @@ int dequeue(Queue* q) {
 void drawQueue(Queue* q) {
     Node* current = q->front;
     int xPos = 67;
-    const int yPos = 230;
+    const int yPos = 250;
     const int horizontalSpacing = 100;
     const int rectangleWidth = 60;  // Width of the rectangles
     const int rectangleHeight = 40; // Height of the rectangles
 
     while (current != NULL) {
         // Draw the rectangle
-        DrawRectangle(xPos, yPos, rectangleWidth, rectangleHeight, (Color){0xD5, 0xBD, 0xAF, 0xFF});
+        DrawRectangle(xPos, yPos, rectangleWidth, rectangleHeight, (Color){0xff, 0xbf, 0x69, 0xFF});
 
         // Calculate the position to center the text inside the rectangle
         int textWidth = MeasureText(TextFormat("%d", current->data), 20);
@@ -173,29 +173,29 @@ int main(void) {
         }
 
         BeginDrawing();
-        ClearBackground((Color){0xD6, 0xCC, 0xC2, 255});
+        ClearBackground(WHITE);// (Color){0xD6, 0xCC, 0xC2, 255}
         // dessiner la file
         drawQueue(&q);
         // Dessiner "Enfiler"
-        DrawRectangleRec(enfilerButton, (Color){0xF5, 0xEB, 0xE0, 255});
-        DrawText("Enfiler", enfilerButton.x + 15, enfilerButton.y + 10, 20,BLACK);
+        DrawRectangleRec(enfilerButton, (Color){0x2e, 0xc4, 0xb6, 255});
+        DrawText("Enfiler", enfilerButton.x + 15, enfilerButton.y + 10, 20,WHITE);
 
         // Dessiner "Defiler"
-        DrawRectangle(600, 100, 100, 40,(Color){0xF5, 0xEB, 0xE0, 255});
-        DrawText("Defiler", 615, 110, 20,BLACK);
+        DrawRectangle(600, 100, 100, 40,(Color){0x2e, 0xc4, 0xb6, 255});
+        DrawText("Defiler", 615, 110, 20,WHITE);
 
         // Dessiner "Quitter"
-        DrawRectangle(600, 150, 100, 40, (Color){0xF5, 0xEB, 0xE0, 255});
-        DrawText("Quitter", 615, 160, 20, BLACK);
+        DrawRectangle(600, 150, 100, 40,(Color){0x2e, 0xc4, 0xb6, 255});
+        DrawText("Quitter", 615, 160, 20, WHITE);
 
         // Zone de l'ecriture
         if (inputMode) {
             // Afficher le bouton d'entrée à côté du bouton "Enfiler"
-            DrawCircle(inputButtonCenter.x, inputButtonCenter.y, circleRadius, (Color){0xF5, 0xEB, 0xE0, 255});
-            DrawText(inputValue, inputButtonCenter.x - 15, inputButtonCenter.y - 10, 20, BLACK);
+            DrawCircle(inputButtonCenter.x, inputButtonCenter.y, circleRadius, (Color){0x2e, 0xc4, 0xb6, 255});
+            DrawText(inputValue, inputButtonCenter.x - 15, inputButtonCenter.y - 10, 20, WHITE);
         }
         // zone de message d'erreures
-        DrawText(errorMessage, 10, 10, 20, RED);
+        DrawText(errorMessage, 20, 20, 20, RED);
 
         EndDrawing();
     }
