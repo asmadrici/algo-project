@@ -126,10 +126,9 @@ int main(void) {
                 // Show the input button
                     showInputButton = true;
             }else{
-              strcpy(errorMessage, "Error: La file est pleine ! \n"
+             strcpy(errorMessage, "Error: La file est pleine ! \n"
             "\n(La file n'a pas de maximum mais pour des \n"
-              "\nraison de graphique on a mis une limite)");
-            }
+              "\n raison de graphique on a mis une limite)");
             }
             }else {
                 // Si on clique sur un autre bouton, désactiver le mode d'entrée
