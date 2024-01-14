@@ -2,7 +2,6 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <malloc.h>
 
 // Declaration d une file
@@ -88,20 +87,24 @@ int main(void) {
     Queue q = { .front = NULL, .rear = NULL };// initialision de la file
 
     int nodeCount = 0; // compteur d'elements de la file
-    
     char inputValue[5] = {0};  // To store user input as string
     int inputIndex = 0;  // To keep track of the current index in inputValue
     bool inputMode = false;
-
     float circleRadius = 25.0f;  // Radius of the circles
-  
+    const char *message = " la file est déjà initialisée  ";
+     
+
     Vector2 enfilerButtonPosition = {600, 50};
     Rectangle enfilerButton = {enfilerButtonPosition.x, enfilerButtonPosition.y, 100, 40};
     Vector2 inputButtonCenter = {enfilerButtonPosition.x + enfilerButton.width + 10 + circleRadius, enfilerButtonPosition.y + enfilerButton.height / 2};
     bool showInputButton = false;
-
+      double startTime = GetTime();
+     double elapsedTime = 0;
 
     while (!WindowShouldClose()) {
+
+
+         elapsedTime = GetTime() - startTime;
         //  si le bouton  est clique
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             // les coordonnees du clic
@@ -187,6 +190,19 @@ int main(void) {
         // Dessiner "Quitter"
         DrawRectangle(600, 150, 100, 40,(Color){0x2e, 0xc4, 0xb6, 255});
         DrawText("Quitter", 615, 160, 20, WHITE);
+
+
+
+
+        // Dessiner le message en bas de la fenêtre
+        DrawText(message, (screenWidth - MeasureText(message, 20)) / 2, screenHeight - 50, 20, RED);
+          if (elapsedTime >= 5.0)
+        {
+            // Réinitialiser le temps de début et effacer le message
+            startTime = GetTime();
+            message = "";
+        }
+
 
         // Zone de l'ecriture
         if (inputMode) {
